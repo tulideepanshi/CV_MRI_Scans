@@ -1,0 +1,46 @@
+============================================================
+CLINICAL EVALUATION REPORT: custom_cnn
+============================================================
+
+SUMMARY
+----------------------------------------
+  Overall Accuracy:    0.8750 (87.5%)
+  Macro F1 Score:      0.8749
+  Weighted F1 Score:   0.8749
+  Macro ROC-AUC:       0.9718
+
+PER-CLASS METRICS
+----------------------------------------
+  Class            Prec  Recall   Spec     F1    AUC     N
+  -------------- ------ ------- ------ ------ ------ -----
+  glioma          0.908   0.844  0.972  0.875  0.963   270
+  meningioma      0.804   0.807  0.935  0.806  0.944   270
+  notumor         0.925   0.911  0.975  0.918  0.992   270
+  pituitary       0.866   0.937  0.952  0.900  0.989   270
+
+CLINICAL INTERPRETATION
+----------------------------------------
+  WARNING: glioma recall = 0.844 (<90%) — risk of missed diagnoses
+  WARNING: meningioma recall = 0.807 (<90%) — risk of missed diagnoses
+
+SKLEARN CLASSIFICATION REPORT
+----------------------------------------
+              precision    recall  f1-score   support
+
+      glioma     0.9084    0.8444    0.8752       270
+  meningioma     0.8044    0.8074    0.8059       270
+     notumor     0.9248    0.9111    0.9179       270
+   pituitary     0.8664    0.9370    0.9004       270
+
+    accuracy                         0.8750      1080
+   macro avg     0.8760    0.8750    0.8749      1080
+weighted avg     0.8760    0.8750    0.8749      1080
+
+
+CONFUSION MATRIX
+----------------------------------------
+                    glioma  meningioma     notumor   pituitary
+  glioma               228          31           8           3
+  meningioma            16         218          11          25
+  notumor                2          11         246          11
+  pituitary              5          11           1         253

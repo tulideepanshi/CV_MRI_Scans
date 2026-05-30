@@ -1,0 +1,21 @@
+# Prometheus configuration — scrape metrics from the API
+#
+# This is a minimal setup. In production you'd add:
+#   - alertmanager for PagerDuty/Slack alerts
+#   - Grafana dashboards for visualization
+#   - retention policies for storage management
+
+global:
+  scrape_interval: 15s          # How often to scrape targets
+  evaluation_interval: 15s      # How often to evaluate rules
+  scrape_timeout: 10s
+
+scrape_configs:
+  # API health metrics
+  - job_name: "brain-tumor-api"
+    metrics_path: "/health"      # We use health endpoint as a basic probe
+    static_configs:
+      - targets: ["api:8000"]
+        labels:
+          service: "brain-tumor-api"
+          environment: "production"

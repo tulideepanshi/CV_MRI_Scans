@@ -1,0 +1,156 @@
+##############################################################################
+# Docker Compose — Brain Tumor Classification Stack
+#
+# SERVICES:
+#   api:       FastAPI inference server (the main service)
+#   nginx:     Reverse proxy + static frontend + rate limiting
+#   monitor:   Prometheus metrics exporter (optional, for production)
+#
+# ARCHITECTURE:
+#   Browser → nginx:80 → serves frontend/index.html (static)
+#                       → proxies /predict, /health, /model → api:8000
+#
+# WHY DOCKER COMPOSE (not just Docker run):
+#   1. Multi-service orchestration — API + proxy + monitoring in one command
+#   2. Network isolation — services communicate on a private network
+#   3. Volume management — model files and logs persist across restarts
+#   4. Environment configuration — all settings in one file
+#   5. Reproducible deployment — same stack everywhere (dev, staging, prod)
+#
+# Usage:
+#   # Start all services (API + frontend)
+#   docker compose up -d
+#
+#   # Start just the API (no proxy/frontend)
+#   docker compose up api
+#
+#   # View logs
+#   docker compose logs -f api
+#
+#   # Stop and remove
+#   docker compose down
+#
+#   # Rebuild after code changes
+#   docker compose build api && docker compose up -d
+##############################################################################
+
+services:
+  # ============================================================
+  # API — FastAPI inference server
+  # ============================================================
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: brain-tumor-api
+    restart: unless-stopped
+
+    # Port mapping: host:container
+    # Direct API access at http://localhost:8000
+    # (Frontend uses nginx at port 80 instead)
+    ports:
+      - "8000:8000"
+
+    # Volume mounts — persist model weights and logs across restarts
+    volumes:
+      # Model checkpoint — mount from host so you can swap models without rebuilding
+      - ./models:/app/models:ro          # Read-only: API never writes to models/
+      - ./configs:/app/configs:ro        # Read-only: config file
+      - api-logs:/app/logs               # Named volume for logs (persisted)
+
+    # Environment configuration
+    environment:
+      - MODEL_PATH=models/best_model.pth
+      - MODEL_NAME=efficientnet_pretrained
+      - CONFIG_PATH=configs/config.yaml
+      - IMAGE_SIZE=224
+      - MAX_FILE_SIZE_MB=10
+      - LOG_PREDICTIONS=true
+      - PYTHONPATH=/app
+
+    # Resource limits — prevent runaway memory usage
+    deploy:
+      resources:
+        limits:
+          memory: 4G                     # Max 4GB RAM (model + inference)
+          cpus: "2.0"                    # Max 2 CPU cores
+        reservations:
+          memory: 2G                     # Reserve 2GB (model loading needs this)
+          cpus: "1.0"
+
+    # Health check
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s                  # Give the model time to load
+
+    # Connect to internal network
+    networks:
+      - brain-tumor-net
+
+  # ============================================================
+  # Nginx — Reverse proxy + frontend + rate limiting
+  # ============================================================
+  nginx:
+    image: nginx:1.25-alpine
+    container_name: brain-tumor-proxy
+    restart: unless-stopped
+
+    ports:
+      - "80:80"
+      # - "443:443"                      # Uncomment for HTTPS
+
+    volumes:
+      - ./deploy/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./frontend:/usr/share/nginx/html:ro      # Serve static frontend
+      # - ./deploy/nginx/certs:/etc/nginx/certs:ro    # For HTTPS
+
+    depends_on:
+      api:
+        condition: service_healthy       # Wait for API to be healthy
+
+    networks:
+      - brain-tumor-net
+
+  # ============================================================
+  # Monitoring — Prometheus metrics (optional)
+  # ============================================================
+  monitor:
+    image: prom/prometheus:v2.48.0
+    container_name: brain-tumor-monitor
+    restart: unless-stopped
+
+    ports:
+      - "9090:9090"                      # Prometheus UI
+
+    volumes:
+      - ./deploy/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+
+    depends_on:
+      - api
+
+    networks:
+      - brain-tumor-net
+
+    profiles:
+      - monitoring                       # Only starts with: docker compose --profile monitoring up
+
+# ============================================================
+# Volumes — persistent data
+# ============================================================
+volumes:
+  api-logs:
+    name: brain-tumor-api-logs
+  prometheus-data:
+    name: brain-tumor-prometheus
+
+# ============================================================
+# Networks — service isolation
+# ============================================================
+networks:
+  brain-tumor-net:
+    name: brain-tumor-network
+    driver: bridge

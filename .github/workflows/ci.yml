@@ -1,0 +1,206 @@
+# ============================================================
+# CI Pipeline — Brain Tumor Classification
+#
+# Runs on every push and PR to main.
+#
+# STAGES:
+#   1. Lint     — ruff (fast Python linter) + type stubs check
+#   2. Test     — pytest with coverage on CPU
+#   3. Build    — Docker image build + Trivy security scan
+#   4. Deploy   — (CD) Push to registry + staging deploy (main only)
+#
+# WHY THIS ORDER:
+#   Lint is fastest (~5s) — fail fast on style issues.
+#   Tests are medium (~2min) — catch logic bugs.
+#   Build is slowest (~5min) — only if code is correct.
+#   Deploy only on main merge — never deploy untested code.
+# ============================================================
+
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+env:
+  PYTHON_VERSION: "3.11"
+  DOCKER_IMAGE: brain-tumor-api
+  REGISTRY: ghcr.io
+
+# Cancel in-progress runs on the same branch (saves CI minutes)
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ============================================================
+  # Stage 1: Lint
+  # ============================================================
+  lint:
+    name: Lint & Style
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install linter
+        run: pip install ruff
+
+      - name: Run ruff (lint + format check)
+        run: |
+          ruff check src/ tests/ scripts/
+          ruff format --check src/ tests/ scripts/
+
+  # ============================================================
+  # Stage 2: Test
+  # ============================================================
+  test:
+    name: Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: lint  # Only test if lint passes
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest pytest-cov pytest-xdist httpx
+
+      - name: Run tests with coverage
+        run: |
+          pytest tests/ \
+            -v \
+            --tb=short \
+            --cov=src \
+            --cov-report=term-missing \
+            --cov-report=xml:coverage.xml \
+            --cov-fail-under=60 \
+            -x  # Stop on first failure for faster feedback
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage.xml
+
+  # ============================================================
+  # Stage 3: Build + Security Scan
+  # ============================================================
+  build:
+    name: Docker Build & Security Scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: test  # Only build if tests pass
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: false
+          load: true
+          tags: ${{ env.DOCKER_IMAGE }}:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Run Trivy vulnerability scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ env.DOCKER_IMAGE }}:${{ github.sha }}
+          format: table
+          exit-code: 1              # Fail on HIGH/CRITICAL CVEs
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true      # Skip vulns with no fix available
+
+      - name: Verify Docker health check
+        run: |
+          # Start container (will fail to load model, but structure is valid)
+          docker run -d --name test-api \
+            -p 8000:8000 \
+            -e MODEL_PATH=nonexistent.pth \
+            ${{ env.DOCKER_IMAGE }}:${{ github.sha }} || true
+
+          # Give it time to start
+          sleep 10
+
+          # Health endpoint should respond (503 without model, but server is up)
+          curl -f http://localhost:8000/health || echo "Health check: model not loaded (expected in CI)"
+
+          docker stop test-api || true
+          docker rm test-api || true
+
+  # ============================================================
+  # Stage 4: Deploy (CD — main branch only)
+  # ============================================================
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    environment: staging
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push to registry
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ github.repository }}/${{ env.DOCKER_IMAGE }}:${{ github.sha }}
+            ${{ env.REGISTRY }}/${{ github.repository }}/${{ env.DOCKER_IMAGE }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # ----------------------------------------------------------
+      # Staging deployment placeholder
+      # Replace with your actual deployment method:
+      #   - kubectl apply for Kubernetes
+      #   - docker compose up on a staging server via SSH
+      #   - AWS ECS task definition update
+      # ----------------------------------------------------------
+      - name: Deploy to staging
+        run: |
+          echo "=== STAGING DEPLOYMENT ==="
+          echo "Image: ${{ env.REGISTRY }}/${{ github.repository }}/${{ env.DOCKER_IMAGE }}:${{ github.sha }}"
+          echo ""
+          echo "To deploy manually:"
+          echo "  docker pull ${{ env.REGISTRY }}/${{ github.repository }}/${{ env.DOCKER_IMAGE }}:${{ github.sha }}"
+          echo "  docker compose up -d"
+          echo ""
+          echo "For Kubernetes:"
+          echo "  kubectl set image deployment/brain-tumor-api api=${{ env.REGISTRY }}/${{ github.repository }}/${{ env.DOCKER_IMAGE }}:${{ github.sha }}"

@@ -1,0 +1,198 @@
+======================================================================
+NEAR-DUPLICATE DETECTION REPORT
+======================================================================
+
+Cross-split near-duplicates: 969
+Total near-duplicate pairs (all): 2637
+
+
+--- Hamming Distance = 0 (244 pairs) ---
+Risk Level: EXACT DUPLICATE
+
+  TRAIN: datasets/Training/glioma/Tr-gl_1271.jpg
+  TEST:  datasets/Testing/glioma/Te-gl_169.jpg
+
+  TRAIN: datasets/Training/glioma/Tr-gl_420.jpg
+  TEST:  datasets/Testing/glioma/Te-gl_233.jpg
+
+  TRAIN: datasets/Training/glioma/Tr-gl_361.jpg
+  TEST:  datasets/Testing/glioma/Te-gl_299.jpg
+
+  TRAIN: datasets/Training/glioma/Tr-gl_1057.jpg
+  TEST:  datasets/Testing/glioma/Te-gl_311.jpg
+
+  TRAIN: datasets/Training/glioma/Tr-gl_361.jpg
+  TEST:  datasets/Testing/glioma/Te-gl_364.jpg
+
+  TRAIN: datasets/Training/meningioma/Tr-me_36.jpg
+  TEST:  datasets/Testing/meningioma/Te-me_1.jpg
+
+  TRAIN: datasets/Training/meningioma/Tr-me_404.jpg
+  TEST:  datasets/Testing/meningioma/Te-me_101.jpg
+
+  TRAIN: datasets/Training/meningioma/Tr-me_530.jpg
+  TEST:  datasets/Testing/meningioma/Te-me_105.jpg
+
+  TRAIN: datasets/Training/meningioma/Tr-me_877.jpg
+  TEST:  datasets/Testing/meningioma/Te-me_109.jpg
+
+  TRAIN: datasets/Training/meningioma/Tr-me_865.jpg
+  TEST:  datasets/Testing/meningioma/Te-me_111.jpg
+
+  ... and 234 more pairs
+
+
+--- Hamming Distance = 2 (283 pairs) ---
+Risk Level: HIGH RISK
+
+  TRAIN: datasets/Training/meningioma/Tr-me_1122.jpg
+  TEST:  datasets/Testing/glioma/Te-gl_160.jpg
+
+  TRAIN: datasets/Training/meningioma/Tr-me_458.jpg
+  TEST:  datasets/Testing/glioma/Te-gl_68.jpg
+
+  TRAIN: datasets/Training/meningioma/Tr-me_468.jpg
+  TEST:  datasets/Testing/glioma/Te-gl_68.jpg
+
+  TRAIN: datasets/Training/meningioma/Tr-me_714.jpg
+  TEST:  datasets/Testing/glioma/Te-gl_68.jpg
+
+  TRAIN: datasets/Training/meningioma/Tr-me_543.jpg
+  TEST:  datasets/Testing/meningioma/Te-me_2.jpg
+
+  TRAIN: datasets/Training/meningioma/Tr-me_726.jpg
+  TEST:  datasets/Testing/meningioma/Te-me_2.jpg
+
+  TRAIN: datasets/Training/meningioma/Tr-me_1069.jpg
+  TEST:  datasets/Testing/meningioma/Te-me_252.jpg
+
+  TRAIN: datasets/Training/meningioma/Tr-me_1110.jpg
+  TEST:  datasets/Testing/meningioma/Te-me_262.jpg
+
+  TRAIN: datasets/Training/meningioma/Tr-me_464.jpg
+  TEST:  datasets/Testing/meningioma/Te-me_262.jpg
+
+  TRAIN: datasets/Training/meningioma/Tr-me_639.jpg
+  TEST:  datasets/Testing/meningioma/Te-me_262.jpg
+
+  ... and 273 more pairs
+
+
+--- Hamming Distance = 4 (183 pairs) ---
+Risk Level: MODERATE RISK
+
+  TRAIN: datasets/Training/meningioma/Tr-me_1282.jpg
+  TEST:  datasets/Testing/meningioma/Te-me_125.jpg
+
+  TRAIN: datasets/Training/meningioma/Tr-me_458.jpg
+  TEST:  datasets/Testing/meningioma/Te-me_50.jpg
+
+  TRAIN: datasets/Training/meningioma/Tr-me_714.jpg
+  TEST:  datasets/Testing/meningioma/Te-me_50.jpg
+
+  TRAIN: datasets/Training/meningioma/Tr-me_468.jpg
+  TEST:  datasets/Testing/meningioma/Te-me_61.jpg
+
+  TRAIN: datasets/Training/meningioma/Tr-me_468.jpg
+  TEST:  datasets/Testing/meningioma/Te-me_96.jpg
+
+  TRAIN: datasets/Training/notumor/Tr-no_1386.jpg
+  TEST:  datasets/Testing/notumor/Te-no_104.jpg
+
+  TRAIN: datasets/Training/notumor/Tr-no_1071.jpg
+  TEST:  datasets/Testing/notumor/Te-no_113.jpg
+
+  TRAIN: datasets/Training/notumor/Tr-no_948.jpg
+  TEST:  datasets/Testing/notumor/Te-no_114.jpg
+
+  TRAIN: datasets/Training/notumor/Tr-no_293.jpg
+  TEST:  datasets/Testing/notumor/Te-no_115.jpg
+
+  TRAIN: datasets/Training/notumor/Tr-no_60.jpg
+  TEST:  datasets/Testing/notumor/Te-no_115.jpg
+
+  ... and 173 more pairs
+
+
+--- Hamming Distance = 6 (132 pairs) ---
+Risk Level: MODERATE RISK
+
+  TRAIN: datasets/Training/meningioma/Tr-me_421.jpg
+  TEST:  datasets/Testing/meningioma/Te-me_202.jpg
+
+  TRAIN: datasets/Training/meningioma/Tr-me_465.jpg
+  TEST:  datasets/Testing/meningioma/Te-me_208.jpg
+
+  TRAIN: datasets/Training/notumor/Tr-no_468.jpg
+  TEST:  datasets/Testing/notumor/Te-no_10.jpg
+
+  TRAIN: datasets/Training/notumor/Tr-no_504.jpg
+  TEST:  datasets/Testing/notumor/Te-no_102.jpg
+
+  TRAIN: datasets/Training/notumor/Tr-no_823.jpg
+  TEST:  datasets/Testing/notumor/Te-no_104.jpg
+
+  TRAIN: datasets/Training/notumor/Tr-no_458.jpg
+  TEST:  datasets/Testing/notumor/Te-no_108.jpg
+
+  TRAIN: datasets/Training/notumor/Tr-no_643.jpg
+  TEST:  datasets/Testing/notumor/Te-no_11.jpg
+
+  TRAIN: datasets/Training/notumor/Tr-no_1103.jpg
+  TEST:  datasets/Testing/notumor/Te-no_114.jpg
+
+  TRAIN: datasets/Training/notumor/Tr-no_909.jpg
+  TEST:  datasets/Testing/notumor/Te-no_122.jpg
+
+  TRAIN: datasets/Training/notumor/Tr-no_975.jpg
+  TEST:  datasets/Testing/notumor/Te-no_122.jpg
+
+  ... and 122 more pairs
+
+
+--- Hamming Distance = 8 (127 pairs) ---
+Risk Level: MODERATE RISK
+
+  TRAIN: datasets/Training/meningioma/Tr-aug-me_68.jpg
+  TEST:  datasets/Testing/meningioma/Te-aug-me_39.jpg
+
+  TRAIN: datasets/Training/meningioma/Tr-me_238.jpg
+  TEST:  datasets/Testing/meningioma/Te-me_157.jpg
+
+  TRAIN: datasets/Training/meningioma/Tr-me_1044.jpg
+  TEST:  datasets/Testing/meningioma/Te-me_230.jpg
+
+  TRAIN: datasets/Training/notumor/Tr-no_892.jpg
+  TEST:  datasets/Testing/notumor/Te-no_101.jpg
+
+  TRAIN: datasets/Training/notumor/Tr-no_234.jpg
+  TEST:  datasets/Testing/notumor/Te-no_11.jpg
+
+  TRAIN: datasets/Training/notumor/Tr-no_1124.jpg
+  TEST:  datasets/Testing/notumor/Te-no_113.jpg
+
+  TRAIN: datasets/Training/notumor/Tr-no_1276.jpg
+  TEST:  datasets/Testing/notumor/Te-no_12.jpg
+
+  TRAIN: datasets/Training/notumor/Tr-no_1112.jpg
+  TEST:  datasets/Testing/notumor/Te-no_120.jpg
+
+  TRAIN: datasets/Training/notumor/Tr-no_200.jpg
+  TEST:  datasets/Testing/notumor/Te-no_120.jpg
+
+  TRAIN: datasets/Training/notumor/Tr-no_437.jpg
+  TEST:  datasets/Testing/notumor/Te-no_120.jpg
+
+  ... and 117 more pairs
+
+
+======================================================================
+RECOMMENDATION
+======================================================================
+
+Action: Use cluster-aware stratified splitting.
+All near-duplicate images are grouped into clusters
+(connected components). The split operates at the
+cluster level — every image in a cluster lands in
+the same pool (train/val/test). This prevents data
+leakage while preserving ALL samples.

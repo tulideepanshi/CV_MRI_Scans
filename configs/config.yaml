@@ -1,0 +1,201 @@
+# ============================================================
+# Brain Tumor MRI Classification — Master Configuration
+# ============================================================
+# This single file controls the entire pipeline:
+# data processing, model selection, training, evaluation, deployment.
+
+# --- Project Metadata ---
+project:
+  name: "brain-tumor-classification"
+  version: "1.0.0"
+  description: "Brain tumor detection and classification from MRI scans"
+  author: "Deepanshi Tuli"
+
+# --- Data Pipeline ---
+data:
+  raw_dir: "datasets"                     # Downloaded Kaggle data (Training/ & Testing/)
+  processed_dir: "data/processed"        # After cleaning & dedup (created if needed)
+  split_dir: "data/splits"               # Final train/val/test (created by split.py)
+
+  kaggle_dataset: "masoudnickparvar/brain-tumor-mri-dataset"
+
+  classes:
+    - "glioma"
+    - "meningioma"
+    - "notumor"
+    - "pituitary"
+  num_classes: 4
+
+  # Image preprocessing
+  image_size: 224                         # Resize target (224 for ImageNet-pretrained models)
+  image_channels: 3                       # Convert grayscale to 3-ch for pretrained models
+  normalization:
+    mean: [0.485, 0.456, 0.406]          # ImageNet defaults (revisit after EDA)
+    std: [0.229, 0.224, 0.225]
+
+  # Data splitting
+  split_ratios:
+    train: 0.70
+    val: 0.15
+    test: 0.15
+  random_seed: 42
+
+  # Near-duplicate detection
+  dedup:
+    enabled: true
+    phash_threshold: 8                    # Hamming distance <= 8 → likely duplicate
+    embedding_similarity_threshold: 0.95  # Cosine similarity >= 0.95 → likely same patient
+
+# --- Augmentation (Ablation Study) ---
+augmentation:
+  # Conservative set — clinically safe
+  conservative:
+    rotation_limit: 15                    # degrees
+    scale_range: [0.9, 1.1]              # zoom in/out
+    brightness_limit: 0.15
+    contrast_limit: 0.15
+    elastic_transform:
+      enabled: true
+      alpha: 50                           # displacement magnitude
+      sigma: 5                            # smoothness
+      probability: 0.3
+    horizontal_flip: false                # DISABLED — laterality matters clinically
+    vertical_flip: false
+
+  # Aggressive set — for ablation comparison
+  aggressive:
+    rotation_limit: 30
+    scale_range: [0.8, 1.2]
+    brightness_limit: 0.2
+    contrast_limit: 0.2
+    elastic_transform:
+      enabled: true
+      alpha: 80
+      sigma: 5
+      probability: 0.5
+    horizontal_flip: true                 # Enabled for comparison
+    cutout:
+      enabled: true
+      num_holes: 1
+      max_h_size: 40
+      max_w_size: 40
+    mixup:
+      enabled: true
+      alpha: 0.2                          # Low alpha for subtle blending
+
+# --- Model Architectures ---
+models:
+  # 1. Custom CNN — baseline
+  custom_cnn:
+    num_conv_blocks: 4
+    initial_filters: 32
+    dropout: 0.5
+
+  # 2. ResNet-style from scratch
+  resnet_scratch:
+    num_blocks: [2, 2, 2, 2]             # Similar to ResNet-18 depth
+    initial_filters: 64
+    dropout: 0.3
+
+  # 3. MobileNet-style lightweight
+  mobilenet_scratch:
+    width_multiplier: 1.0
+    dropout: 0.2
+
+  # 4. Pretrained ResNet-18 fine-tuned
+  resnet_pretrained:
+    backbone: "resnet18"
+    pretrained: true
+    freeze_backbone: false                # Full fine-tuning
+    dropout: 0.3
+
+  # 5. Pretrained EfficientNet-B0 fine-tuned
+  efficientnet_pretrained:
+    backbone: "efficientnet_b0"
+    pretrained: true
+    freeze_backbone: false
+    dropout: 0.2
+
+# --- Training ---
+training:
+  batch_size: 32
+  num_epochs: 30
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  optimizer: "adamw"                      # AdamW > Adam for generalization
+
+  scheduler:
+    type: "cosine_annealing"              # CosineAnnealingLR
+    T_max: 30                             # Same as num_epochs
+    eta_min: 0.00001
+
+  early_stopping:
+    enabled: true
+    patience: 7
+    monitor: "val_f1_macro"               # Monitor F1, not just accuracy
+    mode: "max"
+
+  mixed_precision: true                   # AMP for faster training
+  gradient_clipping: 1.0
+  num_workers: 4
+  pin_memory: true
+  seed: 42
+
+# --- Evaluation ---
+evaluation:
+  metrics:
+    - "accuracy"
+    - "precision_per_class"
+    - "recall_per_class"
+    - "f1_per_class"
+    - "f1_macro"
+    - "confusion_matrix"
+    - "roc_auc_ovr"                       # One-vs-Rest ROC AUC
+    - "sensitivity"                       # = recall (clinical term)
+    - "specificity"
+
+  grad_cam:
+    enabled: true
+    target_layers: "last_conv"            # Layer name resolved per model
+    num_samples: 20                       # Samples per class for visualization
+    colormap: "jet"
+
+# --- Deployment ---
+deployment:
+  api:
+    host: "0.0.0.0"
+    port: 8000
+    model_path: "models/best_model.pth"
+    max_file_size_mb: 10
+    allowed_extensions: [".jpg", ".jpeg", ".png", ".dcm"]
+
+  docker:
+    base_image: "python:3.11-slim"
+    gpu_support: false                    # CPU inference for deployment
+    health_check_interval: 30
+
+# --- Security & Privacy ---
+security:
+  dicom_anonymization:
+    fields_to_remove:
+      - "PatientName"
+      - "PatientID"
+      - "PatientBirthDate"
+      - "PatientAddress"
+      - "ReferringPhysicianName"
+      - "InstitutionName"
+      - "InstitutionAddress"
+    fields_to_hash:
+      - "StudyInstanceUID"
+      - "SeriesInstanceUID"
+      - "SOPInstanceUID"
+
+  encryption:
+    algorithm: "AES-256-GCM"
+    key_derivation: "PBKDF2-HMAC-SHA256"
+
+  audit_logging:
+    enabled: true
+    log_file: "logs/audit.log"
+    log_predictions: true
+    log_access: true

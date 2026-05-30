@@ -1,0 +1,45 @@
+============================================================
+CLINICAL EVALUATION REPORT: mobilenet_scratch
+============================================================
+
+SUMMARY
+----------------------------------------
+  Overall Accuracy:    0.9639 (96.4%)
+  Macro F1 Score:      0.9639
+  Weighted F1 Score:   0.9639
+  Macro ROC-AUC:       0.9973
+
+PER-CLASS METRICS
+----------------------------------------
+  Class            Prec  Recall   Spec     F1    AUC     N
+  -------------- ------ ------- ------ ------ ------ -----
+  glioma          0.959   0.952  0.986  0.955  0.995   270
+  meningioma      0.939   0.963  0.979  0.951  0.996   270
+  notumor         0.985   0.944  0.995  0.964  0.998   270
+  pituitary       0.975   0.996  0.991  0.985  1.000   270
+
+CLINICAL INTERPRETATION
+----------------------------------------
+  All classes have recall >= 90% — acceptable for screening.
+
+SKLEARN CLASSIFICATION REPORT
+----------------------------------------
+              precision    recall  f1-score   support
+
+      glioma     0.9590    0.9519    0.9554       270
+  meningioma     0.9386    0.9630    0.9506       270
+     notumor     0.9846    0.9444    0.9641       270
+   pituitary     0.9746    0.9963    0.9853       270
+
+    accuracy                         0.9639      1080
+   macro avg     0.9642    0.9639    0.9639      1080
+weighted avg     0.9642    0.9639    0.9639      1080
+
+
+CONFUSION MATRIX
+----------------------------------------
+                    glioma  meningioma     notumor   pituitary
+  glioma               257          10           2           1
+  meningioma             7         260           2           1
+  notumor                3           7         255           5
+  pituitary              1           0           0         269

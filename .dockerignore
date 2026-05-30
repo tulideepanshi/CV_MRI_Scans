@@ -1,0 +1,54 @@
+# Docker build context exclusions
+# These files are NOT sent to the Docker daemon during build.
+# This makes builds faster and the context smaller.
+
+# Virtual environment — we install fresh in the container
+venv/
+.venv/
+env/
+
+# Data — model weights are mounted as volumes, not baked into the image
+datasets/
+data/
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Python caches
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+
+# Documentation and reports (not needed at runtime)
+docs/
+*.md
+
+# Frontend (served by nginx, not the API image)
+frontend/
+
+# Trained models (mounted as volumes, not baked into the image)
+models/
+
+# Deploy configs (used by nginx/prometheus, not the API)
+deploy/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Jupyter notebooks
+*.ipynb
+.ipynb_checkpoints/
+
+# Docker files (prevent recursive context)
+docker-compose.yml
+Dockerfile

@@ -1,0 +1,49 @@
+# Data (too large for git)
+datasets/
+data/raw/
+data/processed/
+data/splits/
+data/duplicates.json
+
+# Model checkpoints
+models/**/*.pth
+models/**/*.onnx
+models/**/*.pt
+
+# Logs
+logs/
+runs/
+*.log
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+*.env
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Kaggle
+kaggle.json

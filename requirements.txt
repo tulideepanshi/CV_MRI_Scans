@@ -1,0 +1,57 @@
+# ============================================================
+# Brain Tumor MRI Classification — Dependencies
+# ============================================================
+# Install: pip install -r requirements.txt
+
+# --- Core ML Framework ---
+torch>=2.1.0
+torchvision>=0.16.0
+torchmetrics>=1.2.0
+
+# --- Image Processing & Augmentation ---
+Pillow>=10.0.0
+albumentations>=1.3.1
+opencv-python-headless>=4.8.0
+
+# --- Data Science & Visualization ---
+numpy>=1.24.0
+pandas>=2.0.0
+matplotlib>=3.7.0
+seaborn>=0.12.0
+scikit-learn>=1.3.0
+scipy>=1.11.0
+
+# --- Near-Duplicate Detection ---
+imagehash>=4.3.1
+
+# --- Grad-CAM & Interpretability ---
+grad-cam>=1.5.0
+
+# --- API & Deployment ---
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+python-multipart>=0.0.6
+pydantic>=2.5.0
+
+# --- DICOM & Medical Imaging ---
+pydicom>=2.4.0
+
+# --- Security ---
+cryptography>=41.0.0
+python-jose[cryptography]>=3.3.0
+
+# --- Logging & Monitoring ---
+tensorboard>=2.15.0
+loguru>=0.7.0
+
+# --- Testing ---
+pytest>=7.4.0
+pytest-cov>=4.1.0
+pytest-xdist>=3.5.0
+httpx>=0.25.0
+
+# --- Utilities ---
+tqdm>=4.66.0
+pyyaml>=6.0.1
+python-dotenv>=1.0.0
+kaggle>=1.5.16

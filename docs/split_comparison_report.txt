@@ -1,0 +1,182 @@
+======================================================================
+SPLIT COMPARISON: KAGGLE ORIGINAL vs. CLUSTER-AWARE SPLIT
+======================================================================
+
+Total images tracked: 7200
+
+----------------------------------------------------------------------
+MIGRATION MATRIX (rows = original, columns = new)
+----------------------------------------------------------------------
+                |    train |      val |     test | {'TOTAL':>8s}
+----------------------------------------------------------------
+       Training |    3845 (68.7%) |     891 (15.9%) |     864 (15.4%) |     5600
+        Testing |    1195 (74.7%) |     189 (11.8%) |     216 (13.5%) |     1600
+
+----------------------------------------------------------------------
+INTERPRETATION
+----------------------------------------------------------------------
+
+  Kaggle Training → new train: 3845/5600 (68.7%)
+  Kaggle Training → moved to val/test: 1755 (31.3%)
+
+  Kaggle Testing → new val+test: 405/1600 (25.3%)
+  Kaggle Testing → moved to train: 1195 (74.7%)
+
+----------------------------------------------------------------------
+PER-CLASS MIGRATION (images that changed boundary)
+----------------------------------------------------------------------
+
+  glioma (1800 images):
+    Training → val/test: 439
+    Testing  → train:    299
+    Total moved:         738 (41.0%)
+
+  meningioma (1800 images):
+    Training → val/test: 443
+    Testing  → train:    303
+    Total moved:         746 (41.4%)
+
+  notumor (1800 images):
+    Training → val/test: 465
+    Testing  → train:    325
+    Total moved:         790 (43.9%)
+
+  pituitary (1800 images):
+    Training → val/test: 408
+    Testing  → train:    268
+    Total moved:         676 (37.6%)
+
+----------------------------------------------------------------------
+SUMMARY
+----------------------------------------------------------------------
+
+  Total images that crossed the original train/test boundary: 2950
+  Percentage of dataset reshuffled: 41.0%
+
+  The cluster-aware split moved 2950 images to keep
+  near-duplicate clusters intact within a single pool.
+  This is evidence that the original Kaggle split had potential
+  data leakage that would inflate evaluation metrics.
+
+======================================================================
+
+======================================================================
+CLUSTER MIGRATION ANALYSIS
+======================================================================
+
+  Multi-image clusters: 563
+  Clusters that spanned original Training/Testing boundary: 306
+
+  These 306 clusters are the reason images moved.
+  Each cluster had members in BOTH Training and Testing.
+  The cluster-aware split forced all members into one pool.
+
+  Cross-boundary cluster sizes:
+    Size 2: 156 clusters
+    Size 3: 52 clusters
+    Size 4: 37 clusters
+    Size 5: 19 clusters
+    Size 6: 17 clusters
+    Size 7: 7 clusters
+    Size 8: 5 clusters
+    Size 9: 4 clusters
+    Size 10: 1 clusters
+    Size 12: 3 clusters
+    Size 13: 1 clusters
+    Size 14: 1 clusters
+    Size 16: 1 clusters
+    Size 17: 1 clusters
+    Size 19: 1 clusters
+
+  Example cross-boundary clusters (first 5):
+
+    Cluster 1 (19 images):
+      Te-no_161.jpg: Testing → train ← MOVED
+      Te-no_24.jpg: Testing → train ← MOVED
+      Te-no_329.jpg: Testing → train ← MOVED
+      Te-no_396.jpg: Testing → train ← MOVED
+      Te-no_71.jpg: Testing → train ← MOVED
+      Tr-no_11.jpg: Training → train
+      Tr-no_1338.jpg: Training → train
+      Tr-no_1355.jpg: Training → train
+      Tr-no_19.jpg: Training → train
+      Tr-no_334.jpg: Training → train
+      Tr-no_447.jpg: Training → train
+      Tr-no_499.jpg: Training → train
+      Tr-no_628.jpg: Training → train
+      Tr-no_651.jpg: Training → train
+      Tr-no_716.jpg: Training → train
+      Tr-no_720.jpg: Training → train
+      Tr-no_734.jpg: Training → train
+      Tr-no_839.jpg: Training → train
+      Tr-no_986.jpg: Training → train
+
+    Cluster 2 (17 images):
+      Te-no_140.jpg: Testing → train ← MOVED
+      Te-no_388.jpg: Testing → train ← MOVED
+      Tr-no_1062.jpg: Training → train
+      Tr-no_109.jpg: Training → train
+      Tr-no_1183.jpg: Training → train
+      Tr-no_1252.jpg: Training → train
+      Tr-no_1257.jpg: Training → train
+      Tr-no_21.jpg: Training → train
+      Tr-no_224.jpg: Training → train
+      Tr-no_232.jpg: Training → train
+      Tr-no_249.jpg: Training → train
+      Tr-no_251.jpg: Training → train
+      Tr-no_29.jpg: Training → train
+      Tr-no_371.jpg: Training → train
+      Tr-no_5.jpg: Training → train
+      Tr-no_693.jpg: Training → train
+      Tr-no_82.jpg: Training → train
+
+    Cluster 3 (16 images):
+      Te-no_101.jpg: Testing → train ← MOVED
+      Te-no_129.jpg: Testing → train ← MOVED
+      Te-no_131.jpg: Testing → train ← MOVED
+      Te-no_147.jpg: Testing → train ← MOVED
+      Te-no_185.jpg: Testing → train ← MOVED
+      Te-no_195.jpg: Testing → train ← MOVED
+      Te-no_303.jpg: Testing → train ← MOVED
+      Te-no_395.jpg: Testing → train ← MOVED
+      Te-no_89.jpg: Testing → train ← MOVED
+      Tr-no_1141.jpg: Training → train
+      Tr-no_1195.jpg: Training → train
+      Tr-no_1232.jpg: Training → train
+      Tr-no_1238.jpg: Training → train
+      Tr-no_1356.jpg: Training → train
+      Tr-no_145.jpg: Training → train
+      Tr-no_892.jpg: Training → train
+
+    Cluster 4 (14 images):
+      Te-no_322.jpg: Testing → train ← MOVED
+      Te-no_61.jpg: Testing → train ← MOVED
+      Tr-no_1083.jpg: Training → train
+      Tr-no_1170.jpg: Training → train
+      Tr-no_1220.jpg: Training → train
+      Tr-no_1244.jpg: Training → train
+      Tr-no_1304.jpg: Training → train
+      Tr-no_1392.jpg: Training → train
+      Tr-no_217.jpg: Training → train
+      Tr-no_559.jpg: Training → train
+      Tr-no_620.jpg: Training → train
+      Tr-no_781.jpg: Training → train
+      Tr-no_841.jpg: Training → train
+      Tr-no_955.jpg: Training → train
+
+    Cluster 5 (13 images):
+      Te-no_198.jpg: Testing → train ← MOVED
+      Te-no_25.jpg: Testing → train ← MOVED
+      Te-no_336.jpg: Testing → train ← MOVED
+      Te-no_85.jpg: Testing → train ← MOVED
+      Te-no_90.jpg: Testing → train ← MOVED
+      Tr-no_1084.jpg: Training → train
+      Tr-no_1340.jpg: Training → train
+      Tr-no_24.jpg: Training → train
+      Tr-no_469.jpg: Training → train
+      Tr-no_470.jpg: Training → train
+      Tr-no_704.jpg: Training → train
+      Tr-no_772.jpg: Training → train
+      Tr-no_994.jpg: Training → train
+
+======================================================================
