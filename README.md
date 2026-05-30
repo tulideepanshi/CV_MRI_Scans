@@ -1,6 +1,7 @@
 # Brain Tumor MRI Classification
 
 End-to-end deep learning pipeline for detecting and classifying brain tumors from MRI scans. Built with PyTorch, featuring 5 model architectures, clinical-grade evaluation metrics, Grad-CAM interpretability, and a Dockerized deployment stack.
+Quick look at the results at https://tulideepanshi.github.io/CV_MRI_Scans/
 
 ## Problem Statement
 
